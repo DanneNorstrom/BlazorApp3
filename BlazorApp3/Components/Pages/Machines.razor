@@ -1,0 +1,80 @@
+﻿
+@using Microsoft.EntityFrameworkCore
+@using BlazorApp3.Data
+@using BlazorApp3.Models
+
+@rendermode InteractiveServer
+
+@implements IAsyncDisposable
+@inject IDbContextFactory<StorageContext> DbFactory
+
+
+<PageTitle>Machines</PageTitle>
+
+<h5>Machines</h5>
+
+<button class="btn btn-primary" @onclick="() => Add()">Add</button>
+
+
+<p></p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Datafrom</th>
+                <th>On/Off</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var machine in machines)
+            {
+                <tr>
+                    <td>@machine.Id</td>
+                    <td>@machine.Name</td>
+
+                    <td>@machine.Status</td>
+
+                    <td>@machine.Datafrom</td>
+                    <td><button class="btn btn-primary" @onclick="() => OnOff(machine.Id)">@machine.Id</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+@code {
+
+    private StorageContext context = default!;
+    private List<Machine> machines = new List<Machine>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        context = DbFactory.CreateDbContext();
+
+        machines = await context.Machine.ToListAsync();
+    }
+
+    private async Task OnOff(int id)
+    {
+        var m = await context.Machine.FindAsync(id);
+        if (m.Status == "offline") m.Status = "online";
+        else m.Status = "offline";
+        context.Machine.Update(m);
+        await context.SaveChangesAsync();
+    }
+
+    private async Task Add()
+    {
+        //context.Machine.AddAsync(product);
+        //await context.SaveChangesAsync();
+    }
+
+    private async Task Remove()
+    {
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}
