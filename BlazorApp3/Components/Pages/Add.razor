@@ -1,0 +1,55 @@
+﻿@page "/add"
+@using Microsoft.EntityFrameworkCore
+@using BlazorApp3.Data
+@using BlazorApp3.Models
+
+@implements IAsyncDisposable
+@inject IDbContextFactory<StorageContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Add machine</PageTitle>
+
+<h3>Add machine</h3>
+
+    
+<EditForm FormName="Addmachine" Model="this" OnSubmit="Submit">
+<InputText @bind-Value="Name" />
+<button type="submit">Submit</button>
+</EditForm>
+
+@code {
+
+    private StorageContext context = default!;
+
+    [SupplyParameterFromForm]
+    private string? Name { get; set; }
+
+    //private void Submit() => submitted = true;
+    //private void Submit()
+    //{
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+    }
+
+    private async Task Submit()
+    {
+        var m = new Machine
+        {
+            Name = this.Name,
+            Status = "offline",
+            Datato = " ",
+            Datafrom = " "
+        };
+
+        context.Machine.Add(m);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/");
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}
+
+
+

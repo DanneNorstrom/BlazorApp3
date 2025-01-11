@@ -1,5 +1,4 @@
-﻿
-@using Microsoft.EntityFrameworkCore
+﻿@using Microsoft.EntityFrameworkCore
 @using BlazorApp3.Data
 @using BlazorApp3.Models
 
@@ -11,10 +10,9 @@
 
 <PageTitle>Machines</PageTitle>
 
-<h5>Machines</h5>
+<h5><b>Machines</b></h5>
 
-<button class="btn btn-primary" @onclick="() => Add()">Add</button>
-
+<a href="/add">Add machine</a>
 
 <p></p>
 
@@ -38,7 +36,9 @@
                     <td>@machine.Status</td>
 
                     <td>@machine.Datafrom</td>
-                    <td><button class="btn btn-primary" @onclick="() => OnOff(machine.Id)">@machine.Id</button></td>
+                    <td><button class="btn btn-primary" @onclick="() => OnOff(machine.Id)">Power</button></td>
+                    <td><button class="btn btn-primary" @onclick="() => Remove(machine.Id)">Remove</button></td>
+
                 </tr>
             }
         </tbody>
@@ -66,14 +66,11 @@
         await context.SaveChangesAsync();
     }
 
-    private async Task Add()
+    private async Task Remove(int id)
     {
-        //context.Machine.AddAsync(product);
-        //await context.SaveChangesAsync();
-    }
-
-    private async Task Remove()
-    {
+        var m = await context.Machine.FindAsync(id);
+        context.Machine.Remove(m);
+        await context.SaveChangesAsync();
     }
 
     public async ValueTask DisposeAsync() => await context.DisposeAsync();
