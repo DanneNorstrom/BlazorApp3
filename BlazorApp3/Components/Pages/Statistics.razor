@@ -1,11 +1,53 @@
-﻿
+﻿@using Microsoft.EntityFrameworkCore
+@using BlazorApp3.Data
+@using BlazorApp3.Models
+
+
+
+@implements IAsyncDisposable
+@inject IDbContextFactory<StorageContext> DbFactory
+
 <PageTitle>Statistics</PageTitle>
 
 <h5><b>Statistics</b></h5>
 
+@{
+    int e = 5;
+}
+<div>Machines in the park: @total</div>
+<div>Machines in the park online: @online</div>
+<div>Machines in the park offline: @offline</div>
+
+
 
 @code {
-    Guid g = System.Guid.NewGuid();
-    
-    int a = 6;
+    private int total = 0;
+    private int offline = 0;
+    private int online = 0;
+
+    private StorageContext context = default!;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        context = DbFactory.CreateDbContext();
+
+        total = await context.Machine.CountAsync();
+
+        offline = await context.Machine
+        .Where(m => m.Status == "offline")
+        .CountAsync();
+
+        online = await context.Machine
+       .Where(m => m.Status == "online")
+       .CountAsync();
+    }
+
+    //Guid g = System.Guid.NewGuid();
+
+    //int a = 6;
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+
 }
+

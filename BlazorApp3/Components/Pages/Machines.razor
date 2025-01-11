@@ -6,6 +6,8 @@
 
 @implements IAsyncDisposable
 @inject IDbContextFactory<StorageContext> DbFactory
+@inject NavigationManager NavigationManager
+
 
 
 <PageTitle>Machines</PageTitle>
@@ -16,33 +18,32 @@
 
 <p></p>
 
-    <table class="table">
-        <thead>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Data from</th>
+            <th>On/Off</th>
+            <th>Data to</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var machine in machines)
+        {
             <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Status</th>
-                <th>Datafrom</th>
-                <th>On/Off</th>
+                <td>@machine.Id</td>
+                <td>@machine.Name</td>
+                <td>@machine.Status</td>
+                <td>@machine.Datafrom</td>
+                <td><button class="btn btn-primary" @onclick="() => OnOff(machine.Id)">Power</button></td>
+                <td><a href="/send/@machine.Id">Send</a></td>
+                <td><a href="/remove/@machine.Id">Remove</a></td>
             </tr>
-        </thead>
-        <tbody>
-            @foreach (var machine in machines)
-            {
-                <tr>
-                    <td>@machine.Id</td>
-                    <td>@machine.Name</td>
-
-                    <td>@machine.Status</td>
-
-                    <td>@machine.Datafrom</td>
-                    <td><button class="btn btn-primary" @onclick="() => OnOff(machine.Id)">Power</button></td>
-                    <td><button class="btn btn-primary" @onclick="() => Remove(machine.Id)">Remove</button></td>
-
-                </tr>
-            }
-        </tbody>
-    </table>
+        }
+    </tbody>
+</table>
 
 @code {
 
@@ -64,14 +65,17 @@
         else m.Status = "offline";
         context.Machine.Update(m);
         await context.SaveChangesAsync();
+
+        NavigationManager.NavigateTo("/");
     }
 
-    private async Task Remove(int id)
+    /*private async Task Remove(int id)
     {
         var m = await context.Machine.FindAsync(id);
         context.Machine.Remove(m);
         await context.SaveChangesAsync();
-    }
+        NavigationManager.NavigateTo("/");
+    }*/
 
     public async ValueTask DisposeAsync() => await context.DisposeAsync();
 }
