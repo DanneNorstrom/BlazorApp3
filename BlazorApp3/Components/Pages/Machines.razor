@@ -58,7 +58,7 @@
         machines = await context.Machine.ToListAsync();
     }
 
-    private async Task OnOff(int id)
+    private async Task OnOff(string id)
     {
         var m = await context.Machine.FindAsync(id);
         if (m.Status == "offline") m.Status = "online";

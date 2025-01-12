@@ -37,12 +37,12 @@
     private async Task Submit()
     {
         var m = new Machine
-            {
-                Name = this.Name,
-                Status = "offline",
-                Datato = " ",
-                Datafrom = " "
-            };
+        {
+            Name = this.Name,
+            Status = "offline",
+            Datato = " ",
+            Datafrom = " "
+        };
 
         context.Machine.Add(m);
         await context.SaveChangesAsync();
